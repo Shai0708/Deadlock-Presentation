@@ -33,7 +33,7 @@ const SlideRenderer: React.FC<Props> = ({ slide }) => {
       case 'hand': return <svg className={`w-6 h-6 ${animationClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 013 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m-3-5.5a1.5 1.5 0 013 0v1"/></svg>;
       case 'shield': return <svg className={`w-6 h-6 ${animationClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>;
       case 'refresh': return <svg className={`w-6 h-6 ${animationClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>;
-      case 'unlock': return <svg className={`w-6 h-6 ${animationClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>;
+      case 'unlock': return <svg className={`w-6 h-6 ${animationClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 11V7a4 4 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>;
       case 'hand-release': return <svg className={`w-6 h-6 ${animationClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>;
       case 'shield-off': return <svg className={`w-6 h-6 ${animationClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>;
       case 'sort': return <svg className={`w-6 h-6 ${animationClass}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>;
@@ -153,7 +153,7 @@ const SlideRenderer: React.FC<Props> = ({ slide }) => {
               </div>
               <div className="overflow-hidden">
                 <h3 className={`text-xl font-black tracking-tighter truncate ${activePoint === idx ? 'text-white' : 'text-slate-800'}`}>{p.label}</h3>
-                <p className={`text-[8px] font-bold uppercase tracking-widest mt-0.5 transition-opacity ${activePoint === idx ? 'text-blue-100 opacity-100' : 'text-slate-400 opacity-0 group-hover:opacity-100'}`}>See System Impact</p>
+                <p className={`text-[8px] font-bold uppercase tracking-widest mt-0.5 transition-opacity ${activePoint === idx ? 'text-blue-100 opacity-100' : 'text-slate-400 opacity-0 group-hover:opacity-100'}`}>Read Full Explanation</p>
               </div>
             </button>
           ))}
@@ -172,14 +172,18 @@ const SlideRenderer: React.FC<Props> = ({ slide }) => {
                 <h3 className="text-4xl font-black text-slate-900 mb-4 tracking-tighter leading-none">
                   {slide.points?.[activePoint].label}
                 </h3>
-                <p className="text-xl text-blue-600 font-medium mb-6 leading-relaxed italic">"{slide.points?.[activePoint].description}"</p>
+                <p className="text-xl text-slate-700 font-medium mb-6 leading-relaxed">
+                  {slide.points?.[activePoint].description}
+                </p>
                 
-                <div className="bg-slate-50 p-6 rounded-2xl border-l-4 border-blue-600 animate-in slide-in-from-left duration-700 shadow-inner">
-                  <h4 className="text-blue-600 font-black text-[9px] uppercase tracking-[0.2em] mb-2">The Fatal Connection</h4>
-                  <p className="text-xl text-slate-700 leading-relaxed font-semibold">
-                    {slide.points?.[activePoint].deadlockImpact}
-                  </p>
-                </div>
+                {slide.points?.[activePoint].deadlockImpact && (
+                  <div className="bg-slate-50 p-6 rounded-2xl border-l-4 border-blue-600 animate-in slide-in-from-left duration-700 shadow-inner">
+                    <h4 className="text-blue-600 font-black text-[9px] uppercase tracking-[0.2em] mb-2">Scenario Context</h4>
+                    <p className="text-xl text-slate-700 leading-relaxed font-semibold">
+                      {slide.points?.[activePoint].deadlockImpact}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -305,6 +309,9 @@ const SlideRenderer: React.FC<Props> = ({ slide }) => {
         {slide.visualId === 'rag-graph' && <RAGVisualizer mode="deadlock" step={slide.visualStep} />}
         {slide.visualId === 'rag-graph-safe' && <RAGVisualizer mode="safe" step={3} />}
         {slide.visualId === 'scenario-status' && <RAGVisualizer mode="scenario-status" />}
+        {slide.visualId === 'solution-prevention' && <RAGVisualizer mode="solution-prevention" />}
+        {slide.visualId === 'solution-avoidance' && <RAGVisualizer mode="solution-avoidance" />}
+        {slide.visualId === 'solution-recovery' && <RAGVisualizer mode="solution-recovery" />}
       </div>
     </div>
   );
@@ -327,6 +334,9 @@ const SlideRenderer: React.FC<Props> = ({ slide }) => {
         {slide.visualId === 'rag-graph' && <RAGVisualizer mode="deadlock" step={slide.visualStep} />}
         {slide.visualId === 'rag-graph-safe' && <RAGVisualizer mode="safe" step={3} />}
         {slide.visualId === 'scenario-status' && <RAGVisualizer mode="scenario-status" />}
+        {slide.visualId === 'solution-prevention' && <RAGVisualizer mode="solution-prevention" />}
+        {slide.visualId === 'solution-avoidance' && <RAGVisualizer mode="solution-avoidance" />}
+        {slide.visualId === 'solution-recovery' && <RAGVisualizer mode="solution-recovery" />}
       </div>
     </div>
   );
@@ -345,3 +355,4 @@ const SlideRenderer: React.FC<Props> = ({ slide }) => {
 };
 
 export default SlideRenderer;
+
