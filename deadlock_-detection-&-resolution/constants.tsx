@@ -35,22 +35,26 @@ export const SLIDES: Slide[] = [
     points: [
       { 
         label: 'Mutual Exclusion', 
-        description: 'At least one resource must be held in a non-shareable mode. Only one process at a time can use the resource. If another process requests that resource, the requesting process must be delayed until the resource has been released by the current owner.',
+        description: 'Only one process at a time can use the resource.',
+        deadlockImpact: 'In our kitchen, if two chefs could use the same knife at once, there would be no waiting. Since they can\'t, the resource becomes a bottleneck.',
         icon: 'lock'
       },
       { 
         label: 'Hold and Wait', 
-        description: 'A process must be holding at least one resource and waiting to acquire additional resources that are currently being held by other processes. The process maintains its current resource holdings while demanding others, refusing to progress without all required tools.',
+        description: 'Processes keep resources they already have while waiting for new ones.',
+        deadlockImpact: 'A chef refuses to put down the knife while waiting for the bread. This "selfish" behavior prevents others from using the knife to finish their own work.',
         icon: 'hand'
       },
       { 
         label: 'No Preemption', 
-        description: 'Resources cannot be forcibly taken from a process. A resource can be released only voluntarily by the process holding it, after that process has completed its task. The operating system cannot intervene to snatch the resource away to satisfy another process.',
+        description: 'Resources cannot be forcibly taken from a process.',
+        deadlockImpact: 'If a manager could snatch the knife from a waiting chef, the deadlock would break. Without preemption, we are stuck until the chef releases it voluntarily.',
         icon: 'shield'
       },
       { 
         label: 'Circular Wait', 
-        description: 'A set of processes {P0, P1, ..., Pn} exists such that P0 is waiting for a resource held by P1, P1 is waiting for a resource held by P2, and so on, with Pn waiting for a resource held by P0. This creates a closed dependency loop where no one can move first.',
+        description: 'A set of processes wait for each other in a closed loop.',
+        deadlockImpact: 'This is the final lock. P1 waits for P2, who waits for P3, who waits for P1. No one is first in line, and no one can move.',
         icon: 'refresh'
       }
     ]
@@ -114,46 +118,67 @@ export const SLIDES: Slide[] = [
     visualStep: 3
   },
   {
-    id: 'prevention',
-    type: 'split',
-    title: 'Strategy 1: Prevention',
-    subtitle: 'Breaking the "Circular Wait" Condition',
+    id: 'prevention-interactive',
+    type: 'simulation',
+    title: 'Interactive: Breaking the Cycle',
+    subtitle: 'Applying Linear Resource Ordering',
     headerIcon: 'prevent',
     content: [
-      'Assign a hierarchy to resources (Knife=1, Bread=2, Plate=3).',
-      'Rule: A process can only request resources in increasing order.',
-      'If P3 holds the Plate(3), it is forbidden from asking for the Knife(1).',
-      'This prevents any cycle from ever being physically possible.'
+      'In a "Safe System", we assign a hierarchy to resources.',
+      'Chefs MUST pick up the tool with the lower number first.',
+      '1. Knife | 2. Bread | 3. Plate',
+      'By forcing Chef P3 to wait for the Knife (1) before grabbing the Plate (3), the cycle never forms!'
     ],
-    visualId: 'solution-prevention'
+    visualId: 'rag-graph-safe'
+  },
+  {
+    id: 'prevention',
+    type: 'strategy',
+    title: 'Strategy 1: Prevention',
+    subtitle: 'Eliminating one of the 4 conditions',
+    headerIcon: 'prevent',
+    points: [
+      { label: 'Invalidate Mutual Exclusion', description: 'Convert non-shareable resources to shareable ones via spooling or virtualization.', icon: 'unlock' },
+      { label: 'Invalidate Hold and Wait', description: 'Require processes to request all resources at start, preventing incremental claims.', icon: 'bundle' },
+      { label: 'Allow Preemption', description: 'Forcibly take resources from waiting processes to reallocate to higher priority ones.', icon: 'shield-off' },
+      { label: 'Invalidate Circular Wait', description: 'Impose a strict resource hierarchy. Processes must request in ascending numeric order.', icon: 'sort' }
+    ]
   },
   {
     id: 'avoidance',
-    type: 'split',
+    type: 'strategy',
     title: 'Strategy 2: Avoidance',
-    subtitle: "The Banker's Algorithm",
+    subtitle: 'The Banker\'s Algorithm',
     headerIcon: 'bank',
-    content: [
-      'The OS acts as a "Banker" checking future safety.',
-      'Before granting a resource, the system simulates all possible outcomes.',
-      'If giving a tool leads to a state where at least one process might never finish, the request is BLOCKED.',
-      'Result: The system stays in a "Safe State" by staying pessimistic.'
-    ],
-    visualId: 'solution-avoidance'
+    points: [
+      { 
+        label: 'Prior Knowledge', 
+        description: 'System knows the maximum resources each process will ever need before they start.', 
+        icon: 'brain' 
+      },
+      { 
+        label: 'Safe State Checking', 
+        description: 'Resources are only allocated if the resulting state allows everyone to finish eventually.', 
+        icon: 'check-circle' 
+      },
+      { 
+        label: 'Resource Denial', 
+        description: 'Requests are blocked if they lead to an unsafe state, even if resources are free.', 
+        icon: 'cross-circle' 
+      }
+    ]
   },
   {
     id: 'recovery',
-    type: 'split',
+    type: 'strategy',
     title: 'Strategy 3: Detection & Recovery',
-    subtitle: 'Breaking the Jam by Force',
+    subtitle: 'Let it happen, then fix it',
     headerIcon: 'search',
-    content: [
-      'System periodically scans for cycles in the resource graph.',
-      'Once detected, it selects a "Victim" process to terminate.',
-      'Aborting one process (P2) releases its resources back to the pool.',
-      'Others (P1) can then complete their execution, clearing the deadlock.'
-    ],
-    visualId: 'solution-recovery'
+    points: [
+      { label: 'Process Termination', description: 'Abort all deadlocked processes or one-by-one until the cycle is broken.', icon: 'terminate' },
+      { label: 'Resource Preemption', description: 'Preempt resources from one process and give to another until deadlock clears.', icon: 'transfer' },
+      { label: 'System Rollback', description: 'Return to a known safe checkpoint and restart execution from that point.', icon: 'history' }
+    ]
   },
   {
     id: 'conclusion',
