@@ -79,7 +79,7 @@ export const SLIDES: Slide[] = [
     content: [
       'Chef P1 successfully acquires the Knife (Resource K).',
       'P1 now requests the Bread (Resource B), which is currently free.',
-      'Wait... Chef P2 is faster!'
+      'Chef P1 is now "holding" one tool and "waiting" for another.'
     ],
     visualId: 'rag-graph',
     visualStep: 1
@@ -87,13 +87,13 @@ export const SLIDES: Slide[] = [
   {
     id: 'rag-step-2',
     type: 'split',
-    title: 'Step 2: The Competition',
+    title: 'Step 2: Growing Dependency',
     subtitle: 'P2 claims the Bread',
     headerIcon: 'bread',
     content: [
-      'Chef P2 acquires the Bread (B).',
-      'P1 is now stuck waiting for B.',
-      'P2 requests the Plate (P), but Chef P3 is already there.'
+      'Chef P2 arrives and acquires the Bread (Resource B).',
+      'P1 is now officially "blocked" as B is held by P2.',
+      'P2 then requests the Plate (Resource P) to finish their task.'
     ],
     visualId: 'rag-graph',
     visualStep: 2
@@ -101,80 +101,71 @@ export const SLIDES: Slide[] = [
   {
     id: 'rag-step-3',
     type: 'split',
-    title: 'Step 3: The Deadlock Closes',
+    title: 'Step 3: The Deadlock Cycle',
     subtitle: 'P3 claims the Plate',
     headerIcon: 'plate',
     content: [
-      'Chef P3 acquires the Plate (P).',
-      'P2 is now stuck waiting for P.',
-      'P3 requests the Knife (K)... but P1 is holding it!',
-      'THE CIRCLE IS COMPLETE.'
+      'Chef P3 acquires the Plate (Resource P).',
+      'P2 is now blocked waiting for P3.',
+      'Finally, P3 requests the Knife held by P1.',
+      'The cycle is closed. No one can move!'
     ],
     visualId: 'rag-graph',
     visualStep: 3
   },
   {
-    id: 'prevention-interactive',
+    id: 'interactive-simulation',
     type: 'simulation',
-    title: 'Interactive: Breaking the Cycle',
-    subtitle: 'Applying Linear Resource Ordering',
-    headerIcon: 'prevent',
+    title: 'Interactive RAG Simulation',
+    subtitle: 'Play with the system',
+    headerIcon: 'logic',
     content: [
-      'In a "Safe System", we assign a hierarchy to resources.',
-      'Chefs MUST pick up the tool with the lower number first.',
-      '1. Knife | 2. Bread | 3. Plate',
-      'By forcing Chef P3 to wait for the Knife (1) before grabbing the Plate (3), the cycle never forms!'
+      'Experiment with the Resource Allocation Graph directly.',
+      'Toggle between strategies to see how they prevent or break the circular chain.'
     ],
-    visualId: 'rag-graph-safe'
+    visualId: 'interactive-rag'
   },
   {
     id: 'prevention',
-    type: 'strategy',
+    type: 'split',
     title: 'Strategy 1: Prevention',
-    subtitle: 'Eliminating one of the 4 conditions',
+    subtitle: 'Breaking the "Circular Wait" Condition',
     headerIcon: 'prevent',
-    points: [
-      { label: 'Invalidate Mutual Exclusion', description: 'Convert non-shareable resources to shareable ones via spooling or virtualization.', icon: 'unlock' },
-      { label: 'Invalidate Hold and Wait', description: 'Require processes to request all resources at start, preventing incremental claims.', icon: 'bundle' },
-      { label: 'Allow Preemption', description: 'Forcibly take resources from waiting processes to reallocate to higher priority ones.', icon: 'shield-off' },
-      { label: 'Invalidate Circular Wait', description: 'Impose a strict resource hierarchy. Processes must request in ascending numeric order.', icon: 'sort' }
-    ]
+    content: [
+      'Hierarchy: Knife=1, Bread=2, Plate=3.',
+      'Rule: A process can only request resources in strictly increasing rank.',
+      'By forcing Chef P3 to ask for the Knife(1) before the Plate(3), we prevent a cycle.',
+      'The graph remains a "Tree" instead of a "Circle".'
+    ],
+    visualId: 'solution-prevention'
   },
   {
     id: 'avoidance',
-    type: 'strategy',
+    type: 'split',
     title: 'Strategy 2: Avoidance',
-    subtitle: 'The Banker\'s Algorithm',
+    subtitle: "The Banker's Algorithm",
     headerIcon: 'bank',
-    points: [
-      { 
-        label: 'Prior Knowledge', 
-        description: 'System knows the maximum resources each process will ever need before they start.', 
-        icon: 'brain' 
-      },
-      { 
-        label: 'Safe State Checking', 
-        description: 'Resources are only allocated if the resulting state allows everyone to finish eventually.', 
-        icon: 'check-circle' 
-      },
-      { 
-        label: 'Resource Denial', 
-        description: 'Requests are blocked if they lead to an unsafe state, even if resources are free.', 
-        icon: 'cross-circle' 
-      }
-    ]
+    content: [
+      'The OS acts as a "Banker" checking future safety.',
+      'Before granting any tool, the system simulates if everyone can still finish.',
+      'If giving a tool leads to an "Unsafe State", the request is delayed.',
+      'Outcome: The system proactively avoids ever reaching a point of deadlock.'
+    ],
+    visualId: 'solution-avoidance'
   },
   {
     id: 'recovery',
-    type: 'strategy',
+    type: 'split',
     title: 'Strategy 3: Detection & Recovery',
-    subtitle: 'Let it happen, then fix it',
+    subtitle: 'Breaking the Jam by Force',
     headerIcon: 'search',
-    points: [
-      { label: 'Process Termination', description: 'Abort all deadlocked processes or one-by-one until the cycle is broken.', icon: 'terminate' },
-      { label: 'Resource Preemption', description: 'Preempt resources from one process and give to another until deadlock clears.', icon: 'transfer' },
-      { label: 'System Rollback', description: 'Return to a known safe checkpoint and restart execution from that point.', icon: 'history' }
-    ]
+    content: [
+      'The OS lets deadlocks happen, then fixes them.',
+      'It periodically scans the Wait-For Graph for cycles.',
+      'Once a cycle is found, it terminates a "Victim" process (like Chef P2).',
+      'This releases tools so others can finish their meals.'
+    ],
+    visualId: 'solution-recovery'
   },
   {
     id: 'conclusion',
