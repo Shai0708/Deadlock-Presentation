@@ -30,31 +30,27 @@ export const SLIDES: Slide[] = [
     id: 'coffman',
     type: 'interactive',
     title: 'The Four Coffman Conditions',
-    subtitle: 'The ingredients for a system freeze. All 4 must coexist.',
+    subtitle: 'The fundamental requirements for deadlock. All four must occur simultaneously.',
     headerIcon: 'key',
     points: [
       { 
         label: 'Mutual Exclusion', 
-        description: 'Only one process at a time can use the resource.',
-        deadlockImpact: 'In our kitchen, if two chefs could use the same knife at once, there would be no waiting. Since they can\'t, the resource becomes a bottleneck.',
+        description: 'At least one resource must be held in a non-shareable mode. In this state, only one process at a time can utilize the resource. If another process requests that resource, the requesting process must be delayed until the resource has been released. This condition is fundamental because it creates the initial bottleneck; if resources were infinitely shareable, processes would never need to wait for one another.',
         icon: 'lock'
       },
       { 
         label: 'Hold and Wait', 
-        description: 'Processes keep resources they already have while waiting for new ones.',
-        deadlockImpact: 'A chef refuses to put down the knife while waiting for the bread. This "selfish" behavior prevents others from using the knife to finish their own work.',
+        description: 'A process must be currently holding at least one resource while simultaneously waiting to acquire additional resources that are being held by other processes. Instead of releasing its current holdings to allow other processes to proceed, the process "clings" to what it has, creating a partial block in the system. This incremental acquisition of resources is what allows a deadlock chain to begin forming.',
         icon: 'hand'
       },
       { 
         label: 'No Preemption', 
-        description: 'Resources cannot be forcibly taken from a process.',
-        deadlockImpact: 'If a manager could snatch the knife from a waiting chef, the deadlock would break. Without preemption, we are stuck until the chef releases it voluntarily.',
+        description: 'Resources cannot be forcibly taken away from the processes holding them; they must be released voluntarily by the process after it has completed its task. The operating system lacks the authority to "snatch" a resource from a process to resolve a conflict. Without preemption, the system has no way to forcefully resolve a stalemate, meaning the deadlock persists until manual intervention or process termination occurs.',
         icon: 'shield'
       },
       { 
         label: 'Circular Wait', 
-        description: 'A set of processes wait for each other in a closed loop.',
-        deadlockImpact: 'This is the final lock. P1 waits for P2, who waits for P3, who waits for P1. No one is first in line, and no one can move.',
+        description: 'A closed chain of dependency exists such that Process P0 is waiting for a resource held by P1, P1 is waiting for P2, and eventually, the last process in the chain is waiting for a resource held by P0. This circular dependency is the "final lock" that freezes the system. In a Resource Allocation Graph (RAG), this is visually represented as a cycle where no process is at the "head" of the line, and thus no progress can ever be made.',
         icon: 'refresh'
       }
     ]
