@@ -1,27 +1,19 @@
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SLIDES } from './constants';
 import SlideRenderer from './components/SlideRenderer';
 
 const App: React.FC = () => {
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [direction, setDirection] = useState<'next' | 'prev'>('next');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const prevIdxRef = useRef(0);
 
   const nextSlide = useCallback(() => {
-    if (currentIdx < SLIDES.length - 1) {
-      setDirection('next');
-      setCurrentIdx(currentIdx + 1);
-    }
-  }, [currentIdx]);
+    setCurrentIdx((prev) => (prev < SLIDES.length - 1 ? prev + 1 : prev));
+  }, []);
 
   const prevSlide = useCallback(() => {
-    if (currentIdx > 0) {
-      setDirection('prev');
-      setCurrentIdx(currentIdx - 1);
-    }
-  }, [currentIdx]);
+    setCurrentIdx((prev) => (prev > 0 ? prev - 1 : prev));
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -48,21 +40,15 @@ const App: React.FC = () => {
     }
   };
 
-  const jumpToSlide = (idx: number) => {
-    setDirection(idx > currentIdx ? 'next' : 'prev');
-    setCurrentIdx(idx);
-  };
-
   const progress = ((currentIdx + 1) / SLIDES.length) * 100;
-  const transitionClass = direction === 'next' ? 'animate-in slide-in-right' : 'animate-in slide-in-left';
 
   return (
     <div className="h-screen w-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-blue-100 selection:text-blue-900 overflow-hidden">
-      {/* Top Header/Progress bar stays fixed */}
-      <header className="fixed top-0 left-0 right-0 z-[60] flex flex-col">
+      {/* Top Header/Progress */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex flex-col">
         <div className="flex items-center justify-between px-6 py-3 backdrop-blur-md bg-white/70 border-b border-slate-200">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center font-bold text-xs text-white shadow-lg shadow-blue-500/30 transition-transform hover:scale-110 active:scale-95">
+            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center font-bold text-xs text-white shadow-lg shadow-blue-500/30">
               BU
             </div>
             <span className="font-mono text-[10px] text-slate-500 font-bold tracking-tight hidden md:inline">
@@ -71,11 +57,11 @@ const App: React.FC = () => {
           </div>
           <div className="flex items-center gap-6">
             <span className="text-xs font-mono font-bold text-slate-400">
-              {String(currentIdx + 1).padStart(2, '0')} <span className="text-slate-200">/</span> {String(SLIDES.length).padStart(2, '0')}
+              {String(currentIdx + 1).padStart(2, '0')} / {String(SLIDES.length).padStart(2, '0')}
             </span>
             <button 
               onClick={toggleFullscreen}
-              className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-500 active:bg-slate-200"
+              className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-500"
               title="Toggle Fullscreen (F)"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -86,47 +72,47 @@ const App: React.FC = () => {
         </div>
         <div className="h-[2px] w-full bg-slate-100">
           <div 
-            className="h-full bg-blue-600 transition-all duration-700 ease-in-out shadow-[0_0_8px_rgba(37,99,235,0.4)]"
+            className="h-full bg-blue-600 transition-all duration-300 ease-out shadow-[0_0_8px_rgba(37,99,235,0.4)]"
             style={{ width: `${progress}%` }}
           />
         </div>
       </header>
 
-      {/* Main Slide Container with Directional Transition */}
-      <main className="flex-1 overflow-hidden relative pt-16 pb-24 flex items-center justify-center">
+      {/* Slide Container - Bottom padding (pb-24) prevents content overlap with footer */}
+      <main className="flex-1 overflow-hidden relative pt-16 pb-24">
         <div 
-          className={`h-full w-full px-8 md:px-12 flex items-center justify-center ${transitionClass}`}
+          className="h-full w-full px-8 md:px-12 flex items-center justify-center transition-opacity duration-300 ease-in-out"
           key={currentIdx}
         >
           <SlideRenderer slide={SLIDES[currentIdx]} />
         </div>
         
-        {/* Navigation Arrows with enhanced hover effects */}
+        {/* Navigation Arrows */}
         <button 
           onClick={prevSlide}
           disabled={currentIdx === 0}
-          className="absolute left-6 top-1/2 -translate-y-1/2 p-4 rounded-full bg-white/90 border border-slate-200 text-slate-700 shadow-xl backdrop-blur-md transition-all hover:bg-blue-600 hover:text-white hover:-translate-x-1 active:scale-90 disabled:opacity-0 disabled:pointer-events-none group z-[50] hidden md:flex"
+          className="absolute left-6 top-1/2 -translate-y-1/2 p-3 rounded-2xl bg-white/80 border border-slate-200 text-slate-700 shadow-xl backdrop-blur-sm transition-all hover:bg-blue-600 hover:text-white disabled:opacity-0 disabled:pointer-events-none group z-50 hidden md:flex"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
         <button 
           onClick={nextSlide}
           disabled={currentIdx === SLIDES.length - 1}
-          className="absolute right-6 top-1/2 -translate-y-1/2 p-4 rounded-full bg-white/90 border border-slate-200 text-slate-700 shadow-xl backdrop-blur-md transition-all hover:bg-blue-600 hover:text-white hover:translate-x-1 active:scale-90 disabled:opacity-0 disabled:pointer-events-none group z-[50] hidden md:flex"
+          className="absolute right-6 top-1/2 -translate-y-1/2 p-3 rounded-2xl bg-white/80 border border-slate-200 text-slate-700 shadow-xl backdrop-blur-sm transition-all hover:bg-blue-600 hover:text-white disabled:opacity-0 disabled:pointer-events-none group z-50 hidden md:flex"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
       </main>
 
-      {/* Navigation Footer dots with smooth transitions */}
-      <footer className="fixed bottom-6 left-0 right-0 flex justify-center pointer-events-none z-[60]">
-        <div className="bg-white/90 backdrop-blur-xl rounded-full px-4 py-2 flex gap-2 pointer-events-auto border border-slate-200 shadow-xl hover:shadow-2xl transition-shadow">
+      {/* Navigation Footer */}
+      <footer className="fixed bottom-6 left-0 right-0 flex justify-center pointer-events-none z-50">
+        <div className="bg-white/90 backdrop-blur-xl rounded-full px-4 py-2 flex gap-2 pointer-events-auto border border-slate-200 shadow-xl">
           {SLIDES.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => jumpToSlide(idx)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ease-out hover:scale-125 ${
-                idx === currentIdx ? 'bg-blue-600 w-8 shadow-[0_0_10px_rgba(37,99,235,0.4)]' : 'bg-slate-300 hover:bg-slate-400'
+              onClick={() => setCurrentIdx(idx)}
+              className={`w-2 h-2 rounded-full transition-all duration-500 ${
+                idx === currentIdx ? 'bg-blue-600 w-6' : 'bg-slate-300 hover:bg-slate-400'
               }`}
             />
           ))}
@@ -137,4 +123,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
